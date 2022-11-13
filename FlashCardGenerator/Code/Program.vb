@@ -13,8 +13,8 @@ Module Program
                 Return
             End If
             Es = DownloadEmployees(args.Single)
-            'FIXME: Transform to Anki data
-            'FIXME: Create DB
+            'FIXME: Read Anki data
+            'FIXME: Update Anki data
             'FIXME: Store data to DB
             'FIXME: Save DB to disk
             'FIXME: Save media to disk
