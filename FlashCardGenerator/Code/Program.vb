@@ -13,17 +13,17 @@ Module Program
                 Return
             End If
             Dim Token As String = args(0)
-            Dim File As String = args(1)
+            Dim File As String = IO.Path.GetFullPath(args(1))
             IO.File.Copy(File, $"{File} backup {Now:yyyy-MM-dd HH-mm-ss}.apkg")
             Es = DownloadEmployees(Token)
-            'FIXME: Unzip
-            'FIXME: Dim DB As New EfContext()
-            'FIXME: Update Anki data
-            'FIXME: Store data to DB
-            'FIXME: Save DB to disk
-            'FIXME: Save media to disk
-            'FIXME: Save pictures to disk
-            'FIXME: Zip result
+            Using Files As New FileManager(File)
+                Dim DB As New EfContext(Files.DbPath)
+                'FIXME: Update Anki data
+                'FIXME: Save media to disk
+                'FIXME: Save pictures to disk
+                DB.SaveChanges()
+                Files.SaveChanges()
+            End Using
         Catch ex As Exception
             Console.WriteLine(ex.GetType.Name & ": " & ex.Message)
             Console.WriteLine()
