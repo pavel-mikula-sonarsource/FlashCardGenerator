@@ -8,12 +8,16 @@ Module Program
     Sub Main(args As String())
         Dim E, Es() As Employee
         Try
-            If args.Length <> 1 Then
-                Console.WriteLine("Argument error: Expected 1 argument with BambooHR token")
+            If args.Length <> 2 Then
+                Console.WriteLine("Argument error: Expected 2 arguments: <BambooHR token> <Path to SonarSourcers.apkg>")
                 Return
             End If
-            Es = DownloadEmployees(args.Single)
-            'FIXME: Read Anki data
+            Dim Token As String = args(0)
+            Dim File As String = args(1)
+            IO.File.Copy(File, $"{File} backup {Now:yyyy-MM-dd HH-mm-ss}.apkg")
+            Es = DownloadEmployees(Token)
+            'FIXME: Unzip
+            'FIXME: Dim DB As New EfContext()
             'FIXME: Update Anki data
             'FIXME: Store data to DB
             'FIXME: Save DB to disk
