@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>FlashCardGenerator</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
+    <OptionStrict>On</OptionStrict>
+    <OptionInfer>Off</OptionInfer>
   </PropertyGroup>
 
   <ItemGroup>

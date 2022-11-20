@@ -10,8 +10,8 @@ Namespace Data.Anki
         Public Property conf As Long = 1
         Public Property usn As Long = -1
         Public Property desc As String
-        Public Property dyn As Long =
-        public property collapsed as Boolean,
+        Public Property dyn As Long
+        Public Property collapsed As Boolean
         Public Property extendNew As Long = 10
         Public Property extendRev As Long = 50
         Public Property id As Long

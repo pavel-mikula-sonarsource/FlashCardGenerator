@@ -2,14 +2,16 @@
 Imports System.IO
 Imports System.IO.Compression
 Imports System.Text.Json
+Imports FlashCardGenerator.Data
+Imports SixLabors.ImageSharp
 
 Public Class FileManager
     Implements IDisposable
 
     Public ReadOnly DbPath As String
-    Public ReadOnly Media As IDictionary(Of String, String)
+    Public ReadOnly Media As New Dictionary(Of Integer, String)
 
-    Private ReadOnly fPackagePath, fTempDir, fMediaPath As String
+    Private ReadOnly fPackagePath, fTempDir As String
 
     Public Sub New(PackagePath As String)
         fPackagePath = PackagePath
@@ -22,15 +24,21 @@ Public Class FileManager
         Console.WriteLine("Extracting existing content")
         ZipFile.ExtractToDirectory(PackagePath, fTempDir)
         DbPath = Path.Combine(fTempDir, "collection.anki2")
-        fMediaPath = Path.Combine(fTempDir, "media")
-        Media = JsonSerializer.Deserialize(Of IDictionary(Of String, String))(File.ReadAllText(fMediaPath))
     End Sub
+
+    Public Function AddImage(E As Employee) As String
+        Dim ID As Integer = Media.Count
+        Dim Ret As String = KillInvalidFileNameChars(KillDiacritics(E.Name)).Trim.Replace(" "c, "-"c) & ".jpg"
+        E.Picture.SaveAsJpeg(Path.Combine(fTempDir, ID.ToString))
+        Media.Add(ID, Ret)
+        Return Ret
+    End Function
 
     Public Sub SaveChanges()
         Dim NewPath As String = fPackagePath & ".new"
         Console.WriteLine("Creating new package")
         If File.Exists(NewPath) Then File.Delete(NewPath)
-        File.WriteAllText(fMediaPath, JsonSerializer.Serialize(Media))
+        File.WriteAllText(Path.Combine(fTempDir, "media"), JsonSerializer.Serialize(Media))
         ZipFile.CreateFromDirectory(fTempDir, NewPath)
         Console.WriteLine("Overriding the original file " & fPackagePath)
         File.Move(NewPath, fPackagePath, True)

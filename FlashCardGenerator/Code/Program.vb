@@ -12,6 +12,11 @@ Module Program
             'FIXME: REMOVE DEBUG
             Console.WindowWidth = 200
 
+            Dim G As New Guid(Text.Encoding.UTF8.GetBytes("DVL;Hl4K0F"))
+            Console.WriteLine(G)
+
+            End
+
             If args.Length <> 2 Then
                 Console.WriteLine("Argument error: Expected 2 arguments: <BambooHR token> <Path to SonarSourcers.apkg>")
                 Return
@@ -47,7 +52,7 @@ Module Program
         }
     End Function
 
-    Private Function LoadImage(fn As String) As IImage
+    Private Function LoadImage(fn As String) As Image
         Return Image.Load(fn)
     End Function
 
