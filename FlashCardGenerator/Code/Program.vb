@@ -22,17 +22,13 @@ Module Program
             Es = DownloadEmployees(Token)
             Using Files As New FileManager(File)
                 Using DB As New DbContext(Files.DbPath)
-                    Dim Data As New DbManager(DB)
-
-                    'FIXME: Update Anki data
-                    'FIXME: Save media to disk
-                    'FIXME: Save pictures to disk
+                    Dim Data As New DataManager(Files, DB)
+                    For Each E In Es
+                        Data.Process(E)
+                    Next
                     Data.CleanUp()
                     Data.SaveChanges()
-                    DB.SaveChanges()
                 End Using
-                Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools()  'Release file locks to be able to ZIP and delete the EF file
-                Files.SaveChanges()
             End Using
         Catch ex As Exception
             Console.WriteLine(ex.GetType.Name & ": " & ex.Message)
