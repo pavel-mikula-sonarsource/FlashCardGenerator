@@ -8,6 +8,8 @@ Imports SixLabors.ImageSharp
 Public Class FileManager
     Implements IDisposable
 
+    Private Const DbName As String = "collection.anki2"
+
     Public ReadOnly DbPath As String
     Public ReadOnly Media As New Dictionary(Of Integer, String)
 
@@ -22,13 +24,18 @@ Public Class FileManager
         End If
         Directory.CreateDirectory(fTempDir)
         Console.WriteLine("Extracting existing content")
-        ZipFile.ExtractToDirectory(PackagePath, fTempDir)
-        DbPath = Path.Combine(fTempDir, "collection.anki2")
+        DbPath = Path.Combine(fTempDir, DbName)
+        Using ZA As ZipArchive = ZipFile.OpenRead(PackagePath)
+            ZA.GetEntry(DbName).ExtractToFile(DbPath)
+        End Using
     End Sub
 
     Public Function AddImage(E As Employee) As String
         Dim ID As Integer = Media.Count
         Dim Ret As String = KillInvalidFileNameChars(KillDiacritics(E.Name)).Trim.Replace(" "c, "-"c) & ".jpg"
+
+        'FIXME: Resize 800x800
+
         E.Picture.SaveAsJpeg(Path.Combine(fTempDir, ID.ToString))
         Media.Add(ID, Ret)
         Return Ret

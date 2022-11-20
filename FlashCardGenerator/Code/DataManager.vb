@@ -38,7 +38,6 @@ Public Class DataManager
             fDB.Cards.Remove(I.Card)
             fDB.Notes.Remove(I.Note)
         Next
-        'FIXME: Delete Unused Media
         For Each C As Card In fDB.Cards
             C.reps = 0
             C.left = 0
