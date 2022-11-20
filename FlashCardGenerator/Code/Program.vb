@@ -1,5 +1,4 @@
 
-Imports System.IO
 Imports FlashCardGenerator.Data
 Imports SixLabors.ImageSharp
 
@@ -10,6 +9,9 @@ Module Program
     Sub Main(args As String())
         Dim E, Es() As Employee
         Try
+            'FIXME: REMOVE DEBUG
+            Console.WindowWidth = 200
+
             If args.Length <> 2 Then
                 Console.WriteLine("Argument error: Expected 2 arguments: <BambooHR token> <Path to SonarSourcers.apkg>")
                 Return
@@ -19,11 +21,19 @@ Module Program
             IO.File.Copy(File, $"{File} backup {Now:yyyy-MM-dd HH-mm-ss}.apkg")
             Es = DownloadEmployees(Token)
             Using Files As New FileManager(File)
-                Dim DB As New EfContext(Files.DbPath)
-                'FIXME: Update Anki data
-                'FIXME: Save media to disk
-                'FIXME: Save pictures to disk
-                DB.SaveChanges()
+                Using DB As New EfContext(Files.DbPath)
+                    'Cleanup
+                    'For Each C As Anki.Card In DB.Cards
+                    '    C.reps = 0
+                    '    C.left = 0
+                    'Next
+
+                    'FIXME: Update Anki data
+                    'FIXME: Save media to disk
+                    'FIXME: Save pictures to disk
+                    DB.SaveChanges()
+                End Using
+                Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools()  'Release file locks to be able to ZIP and delete the EF file
                 Files.SaveChanges()
             End Using
         Catch ex As Exception

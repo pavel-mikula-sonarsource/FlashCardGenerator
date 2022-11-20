@@ -9,7 +9,7 @@ Public Class FileManager
     Public ReadOnly DbPath As String
     Public ReadOnly Media As IDictionary(Of String, String)
 
-    Private fPackagePath, fTempDir, fMediaPath As String
+    Private ReadOnly fPackagePath, fTempDir, fMediaPath As String
 
     Public Sub New(PackagePath As String)
         fPackagePath = PackagePath

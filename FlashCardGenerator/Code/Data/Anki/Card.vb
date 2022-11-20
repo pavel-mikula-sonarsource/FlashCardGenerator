@@ -17,7 +17,7 @@ Namespace Data.Anki
         Public Property reps As Long
         Public Property lapses As Long
         Public Property left As Long
-        Public Property pdue As Long
+        Public Property odue As Long
         Public Property odid As Long
         Public Property flags As Long
         Public Property data As String
