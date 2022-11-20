@@ -21,16 +21,14 @@ Module Program
             IO.File.Copy(File, $"{File} backup {Now:yyyy-MM-dd HH-mm-ss}.apkg")
             Es = DownloadEmployees(Token)
             Using Files As New FileManager(File)
-                Using DB As New EfContext(Files.DbPath)
-                    'Cleanup
-                    'For Each C As Anki.Card In DB.Cards
-                    '    C.reps = 0
-                    '    C.left = 0
-                    'Next
+                Using DB As New DbContext(Files.DbPath)
+                    Dim Data As New DbManager(DB)
 
                     'FIXME: Update Anki data
                     'FIXME: Save media to disk
                     'FIXME: Save pictures to disk
+                    Data.CleanUp()
+                    Data.SaveChanges()
                     DB.SaveChanges()
                 End Using
                 Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools()  'Release file locks to be able to ZIP and delete the EF file
