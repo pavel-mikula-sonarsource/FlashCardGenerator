@@ -12,11 +12,6 @@ Module Program
             'FIXME: REMOVE DEBUG
             Console.WindowWidth = 200
 
-            Dim G As New Guid(Text.Encoding.UTF8.GetBytes("DVL;Hl4K0F"))
-            Console.WriteLine(G)
-
-            End
-
             If args.Length <> 2 Then
                 Console.WriteLine("Argument error: Expected 2 arguments: <BambooHR token> <Path to SonarSourcers.apkg>")
                 Return
@@ -25,16 +20,30 @@ Module Program
             Dim File As String = IO.Path.GetFullPath(args(1))
             IO.File.Copy(File, $"{File} backup {Now:yyyy-MM-dd HH-mm-ss}.apkg")
             Es = DownloadEmployees(Token)
-            Using Files As New FileManager(File)
-                Using DB As New DbContext(Files.DbPath)
-                    Dim Data As New DataManager(Files, DB)
-                    For Each E In Es
-                        Data.Process(E)
-                    Next
-                    Data.CleanUp()
-                    Data.SaveChanges()
+            Try
+                Using Files As New FileManager(File)
+                    Using DB As New DbContext(Files.DbPath)
+                        Dim Data As New DataManager(Files, DB)
+                        For Each E In Es
+                            If E.Picture Is Nothing Then
+                                Console.WriteLine("Missing picture, skip: " & E.Name)
+                            Else
+                                Try
+                                    Data.Process(E)
+                                Catch ex As Exception
+                                    Console.WriteLine($"ERROR processing {E.Name}: {ex.GetType.Name} {ex.Message}")
+                                End Try
+                            End If
+                        Next
+                        Data.CleanUp()
+                        Data.SaveChanges()
+                    End Using
                 End Using
-            End Using
+            Finally
+                For Each E In Es
+                    E.Dispose()
+                Next
+            End Try
         Catch ex As Exception
             Console.WriteLine(ex.GetType.Name & ": " & ex.Message)
             Console.WriteLine()
@@ -48,7 +57,9 @@ Module Program
             New Employee(1, "Abass Sabra", "Languages Team", "Geneva", LoadImage("d:\_temp\Anki\Abbas Sabra.jpg")),
             New Employee(2, "Alban Auzeill", "Languages Team", "Geneva", LoadImage("d:\_temp\Anki\Alban Auzeill.jpg")),
             New Employee(3, "Pavel Mikula", "Languages Team", "Geneva", LoadImage("d:\_temp\Anki\Pavel Mikula.jpg")),
-            New Employee(4, "Alicia Savoia", "P&C Team", "Geneva", LoadImage("d:\_temp\Anki\Alicia Savoia.jpg"))
+            New Employee(4, "Alicia Savoia", "P&C Team", "Geneva", LoadImage("d:\_temp\Anki\Alicia Savoia.jpg")),
+            New Employee(4, "Tom Howlet", "PM Team", "Remote", LoadImage("d:\_temp\Anki\Tom Howlet.jpg")),
+            New Employee(5, "New Joiner", "P&C Team", "Geneva", Nothing)
         }
     End Function
 

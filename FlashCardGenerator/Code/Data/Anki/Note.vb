@@ -20,10 +20,10 @@ Namespace Data.Anki
 
         Public Sub New(Flds As String)
             id = NowEpochMilisID()
-            'FIXME: GUID
+            guid = System.Guid.NewGuid.ToString
             [mod] = NowEpochSeconds()
             Me.flds = Flds
-            'FIXME: csum
+            csum = Flds.GetHashCode
         End Sub
 
     End Class

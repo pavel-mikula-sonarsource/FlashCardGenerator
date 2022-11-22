@@ -33,10 +33,7 @@ Public Class FileManager
     Public Function AddImage(E As Employee) As String
         Dim ID As Integer = Media.Count
         Dim Ret As String = KillInvalidFileNameChars(KillDiacritics(E.Name)).Trim.Replace(" "c, "-"c) & ".jpg"
-
-        'FIXME: Resize 800x800
-
-        E.Picture.SaveAsJpeg(Path.Combine(fTempDir, ID.ToString))
+        E.Picture.Resize(800, 800).SaveAsJpeg(Path.Combine(fTempDir, ID.ToString))
         Media.Add(ID, Ret)
         Return Ret
     End Function

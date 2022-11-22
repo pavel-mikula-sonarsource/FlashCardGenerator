@@ -1,7 +1,10 @@
 
 Imports System.Globalization
 Imports System.IO
+Imports System.Runtime.CompilerServices
 Imports System.Text
+Imports SixLabors.ImageSharp
+Imports SixLabors.ImageSharp.Processing
 
 Public Module Common
 
@@ -32,6 +35,22 @@ Public Module Common
             If Not Skip.Contains(C) Then sb.Append(C)
         Next
         Return sb.ToString
+    End Function
+
+    <Extension>
+    Public Function Resize(Img As Image, Width As Integer, Height As Integer) As Image
+        If Img IsNot Nothing Then
+            Dim W, H As Integer
+            If Img.Width = Img.Height Then
+                W = Width : H = Height
+            ElseIf Img.Width > Img.Height Then
+                W = CInt(Width * Img.Width / Img.Height) : H = Height
+            Else
+                W = Width : H = CInt(Height * Img.Height / Img.Width)
+            End If
+            Img.Mutate(Function(X) X.Resize(W, H).Crop(Width, Height))
+        End If
+        Return Img
     End Function
 
 End Module
