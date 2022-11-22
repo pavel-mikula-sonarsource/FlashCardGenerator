@@ -2,8 +2,11 @@
 Imports System.Text.Json
 Imports FlashCardGenerator.Data
 Imports FlashCardGenerator.Data.Anki
+Imports System.Web.HttpUtility
 
 Public Class DataManager
+
+    Private Const PackageName As String = "Test"    'FIXME: SonarSourcers
 
     Private ReadOnly fFiles As FileManager
     Private ReadOnly fDB As DbContext
@@ -21,26 +24,30 @@ Public Class DataManager
     End Sub
 
     Public Sub Process(E As Employee)
-        Dim ImageFN As String = fFiles.AddImage(E)
-        Dim Flds As String = SerializeFields($"<img src=""{ImageFN}"" />", $"<div>{E.Name}</div><div>{E.Team}</div><div>{E.Office}</div>")
+        Dim ImageFN As String = fFiles.AddImage(E), D As Deck = EnsureDeck(PackageName & "::" & E.Office)
+        Dim Flds As String = SerializeFields($"<img src=""{ImageFN}"" />", $"<div style=""font-weight: bold;"">{HtmlEncode(E.Name)}</div><br /><div>{HtmlEncode(E.Team)}</div><br /><div>{HtmlEncode(E.Office)}</div>")
         If fItems.ContainsKey(Flds) Then
-            fItems(Flds).Used = True
+            With fItems(Flds)
+                .Used = True
+                If .Card.Update(D) Then Console.WriteLine("Updating: " & PrintifyHtml(Flds))    '2022/11: Anki 2.16 cannot update this.
+            End With
         Else
-            Console.WriteLine("Adding: " & Flds)
-            Dim N As New Note(Flds)
+            Console.WriteLine("Adding: " & PrintifyHtml(Flds))
+            Dim N As New Note(E.ID.ToString, Flds)
             fDB.Notes.Add(N)
-            fDB.Cards.Add(New Card(N, EnsureDeck("SonarSourcers::" & E.Office)))
+            fDB.Cards.Add(New Card(N, D))
         End If
     End Sub
 
     Public Sub CleanUp()
         Dim Unused As New HashSet(Of Long)(fDecks.Keys)
         For Each I As Item In fItems.Values.Where(Function(X) Not X.Used)
-            Console.WriteLine("Removing: " & I.Note.flds)
+            Console.WriteLine("Removing: " & PrintifyHtml(I.Note.flds))
             fDB.Cards.Remove(I.Card)
             fDB.Notes.Remove(I.Note)
         Next
         fDB.SaveChanges()
+        Unused.Remove(EnsureDeck(PackageName).id)
         For Each C As Card In fDB.Cards
             C.reps = 0
             C.left = 0

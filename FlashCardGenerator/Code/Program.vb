@@ -65,8 +65,8 @@ Module Program
             New Employee(2, "Alban Auzeill", "Languages Team", "Geneva", LoadImage("d:\_temp\Anki\Alban Auzeill.jpg")),
             New Employee(3, "Pavel Mikula", "Languages Team", "Geneva", LoadImage("d:\_temp\Anki\Pavel Mikula.jpg")),
             New Employee(4, "Alicia Savoia", "P&C Team", "Geneva", LoadImage("d:\_temp\Anki\Alicia Savoia.jpg")),
-            New Employee(4, "Tom Howlet", "PM Team", "Remote", LoadImage("d:\_temp\Anki\Tom Howlet.jpg")),
-            New Employee(5, "New Joiner", "P&C Team", "Geneva", Nothing)
+            New Employee(5, "Tom Howlet", "PM Team", "Remote", LoadImage("d:\_temp\Anki\Tom Howlet.jpg")),
+            New Employee(6, "New Joiner", "P&C Team", "Geneva", Nothing)
         }
     End Function
 

@@ -37,6 +37,10 @@ Public Module Common
         Return sb.ToString
     End Function
 
+    Public Function PrintifyHtml(Html As String) As String
+        Return Web.HttpUtility.HtmlDecode(RegularExpressions.Regex.Replace(Html, "<.*?>", " "))
+    End Function
+
     <Extension>
     Public Function Resize(Img As Image, Width As Integer, Height As Integer) As Image
         If Img IsNot Nothing Then

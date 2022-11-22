@@ -4,8 +4,8 @@ Namespace Data.Anki
     Public Class Note
 
         Public Property id As Long          'Primary Key, date created, epoch miliseconds
-        Public Property guid As String      'For sync, messed up
-        Public Property mid As Long = 1561930677787    'Const model ID
+        Public Property guid As String      'For sync, values are messed up. Note.guild and Card.ord are used for skipping existing card. Anki cannot update cards, only notes.
+        Public Property mid As Long = 1561930677787    'Const model ID. Needs to be same for updating notes
         Public Property [mod] As Long       'Modified, epoch seconds
         Public Property usn As Long = -1    'Universal Serial Number for sync, not important
         Public Property tags As String = ""
@@ -18,9 +18,9 @@ Namespace Data.Anki
         Public Sub New()
         End Sub
 
-        Public Sub New(Flds As String)
+        Public Sub New(UniqueID As String, Flds As String)
             id = NowEpochMilisID()
-            guid = System.Guid.NewGuid.ToString
+            guid = UniqueID
             [mod] = NowEpochSeconds()
             Me.flds = Flds
             csum = Flds.GetHashCode
