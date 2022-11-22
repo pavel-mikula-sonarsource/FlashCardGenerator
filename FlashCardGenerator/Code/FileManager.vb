@@ -23,7 +23,7 @@ Public Class FileManager
             Directory.Delete(fTempDir, True)
         End If
         Directory.CreateDirectory(fTempDir)
-        Console.WriteLine("Extracting existing content")
+        Console.WriteLine("Extracting database")
         DbPath = Path.Combine(fTempDir, DbName)
         Using ZA As ZipArchive = ZipFile.OpenRead(PackagePath)
             ZA.GetEntry(DbName).ExtractToFile(DbPath)
@@ -50,7 +50,7 @@ Public Class FileManager
 
     Public Sub Dispose() Implements IDisposable.Dispose
         Try
-            Console.WriteLine("Cleanup: Deleting " & fTempDir)
+            Console.WriteLine("Deleting " & fTempDir)
             Directory.Delete(fTempDir, True)
         Catch ex As Exception
             Console.WriteLine("ERROR: Failed to delete temp dir: " & ex.Message)

@@ -22,12 +22,12 @@ Module Program
             Es = DownloadEmployees(Token)
             Try
                 Using Files As New FileManager(File)
+                    Console.WriteLine("Opening database")
                     Using DB As New DbContext(Files.DbPath)
                         Dim Data As New DataManager(Files, DB)
+                        Console.WriteLine("Processing cards")
                         For Each E In Es
-                            If E.Picture Is Nothing Then
-                                Console.WriteLine("Missing picture, skip: " & E.Name)
-                            Else
+                            If E.Picture IsNot Nothing Then
                                 Try
                                     Data.Process(E)
                                 Catch ex As Exception
@@ -35,10 +35,17 @@ Module Program
                                 End Try
                             End If
                         Next
+                        Console.WriteLine("Database cleanup")
                         Data.CleanUp()
+                        Console.WriteLine("Saving changes")
                         Data.SaveChanges()
                     End Using
                 End Using
+                Console.WriteLine("Done")
+                Console.WriteLine()
+                For Each E In Es.Where(Function(X) X.Picture Is Nothing)
+                    Console.WriteLine("Missing picture, skipped: " & E.Name)
+                Next
             Finally
                 For Each E In Es
                     E.Dispose()

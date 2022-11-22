@@ -17,27 +17,30 @@ Public Class DataManager
         fColRow = DB.Cols.Single
         fDecks = JsonSerializer.Deserialize(Of IDictionary(Of Long, Deck))(fColRow.decks)
         fDeckNames = fDecks.Values.ToDictionary(Function(x) x.name, Function(x) x)
-        fItems = DB.Cards.Join(DB.Notes, Function(X) X.did, Function(X) X.id, Function(C, N) New Item(C, N)).ToDictionary(Function(X) X.Note.flds, Function(X) X)
+        fItems = DB.Cards.Join(DB.Notes, Function(X) X.nid, Function(X) X.id, Function(C, N) New Item(C, N)).ToDictionary(Function(X) X.Note.flds, Function(X) X)
     End Sub
 
     Public Sub Process(E As Employee)
         Dim ImageFN As String = fFiles.AddImage(E)
-        Dim Flds As String = SerializeFields($"<img src=""{ImageFN}"" />", $"{E.Name}<div>{E.Team}</div><div>{E.Office}</div>")
+        Dim Flds As String = SerializeFields($"<img src=""{ImageFN}"" />", $"<div>{E.Name}</div><div>{E.Team}</div><div>{E.Office}</div>")
         If fItems.ContainsKey(Flds) Then
             fItems(Flds).Used = True
         Else
+            Console.WriteLine("Adding: " & Flds)
             Dim N As New Note(Flds)
             fDB.Notes.Add(N)
-            fDB.Cards.Add(New Card(N, EnsureDeck(E.Office)))
+            fDB.Cards.Add(New Card(N, EnsureDeck("SonarSourcers::" & E.Office)))
         End If
     End Sub
 
     Public Sub CleanUp()
         Dim Unused As New HashSet(Of Long)(fDecks.Keys)
         For Each I As Item In fItems.Values.Where(Function(X) Not X.Used)
+            Console.WriteLine("Removing: " & I.Note.flds)
             fDB.Cards.Remove(I.Card)
             fDB.Notes.Remove(I.Note)
         Next
+        fDB.SaveChanges()
         For Each C As Card In fDB.Cards
             C.reps = 0
             C.left = 0
